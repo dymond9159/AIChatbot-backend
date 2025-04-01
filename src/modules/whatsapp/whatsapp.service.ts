@@ -42,9 +42,16 @@ export class WhatsAppService {
 
   private async handleIncomingMessage(msg: any) {
     try {
+      // Ignore messages from our own number
+      if (msg.fromMe) return;
+
       const chat = await msg.getChat();
+      
+      // Process the message with chatbot
       const response = await this.chatbotService.chat(msg.body);
-      await chat.sendMessage(response);
+      
+      // Reply to the message
+      await msg.reply(response);
       
       // Store the conversation in database
       await this.prisma.chatMessage.create({
@@ -57,6 +64,12 @@ export class WhatsAppService {
       });
     } catch (error) {
       console.error('Error handling message:', error);
+      // Try to notify about the error
+      try {
+        await msg.reply('Sorry, I encountered an error processing your message.');
+      } catch (replyError) {
+        console.error('Error sending error message:', replyError);
+      }
     }
   }
 
