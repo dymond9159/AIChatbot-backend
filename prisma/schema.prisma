@@ -15,8 +15,10 @@ model User {
 }
 
 model ChatMessage {
-  id        Int      @id @default(autoincrement())
-  message   String
-  response  String
-  createdAt DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  message     String
+  response    String
+  platform    String   @default("web")
+  phoneNumber String?
+  createdAt   DateTime @default(now())
 }

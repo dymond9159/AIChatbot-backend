@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Client } from 'whatsapp-web.js';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
+import { ChatbotService } from '../chatbot/chatbot.service';
 
 @Injectable()
 export class WhatsAppService {
@@ -10,7 +11,8 @@ export class WhatsAppService {
 
   constructor(
     private configService: ConfigService,
-    private prisma: PrismaService
+    private prisma: PrismaService,
+    private chatbotService: ChatbotService
   ) {
     this.client = new Client({
       authStrategy: 'local',
@@ -41,7 +43,18 @@ export class WhatsAppService {
   private async handleIncomingMessage(msg: any) {
     try {
       const chat = await msg.getChat();
-      await chat.sendMessage('Thank you for your message. How can I help you with your pizza order?');
+      const response = await this.chatbotService.chat(msg.body);
+      await chat.sendMessage(response);
+      
+      // Store the conversation in database
+      await this.prisma.chatMessage.create({
+        data: {
+          message: msg.body,
+          response: response,
+          platform: 'whatsapp',
+          phoneNumber: msg.from
+        }
+      });
     } catch (error) {
       console.error('Error handling message:', error);
     }
