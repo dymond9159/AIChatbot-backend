@@ -48,12 +48,14 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { PrismaService } from './prisma.service';
 import { ChatbotModule } from './chatbot/chatbot.module';
+import { WhatsAppModule } from './whatsapp/whatsapp.module';
 
 
 @Module({
   imports: [
     UsersModule,
     ChatbotModule,
+    WhatsAppModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
@@ -107,3 +109,9 @@ import { Module } from '@nestjs/common';
 
 @Module({})
 export class UsersModule {}
+
+// whatsapp.module.ts
+import { Module } from '@nestjs/common';
+//Import necessary whatsapp packages here.  This is a placeholder.
+@Module({})
+export class WhatsAppModule {}
